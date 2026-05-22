@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCQ পরীক্ষা</title>
+    
+    <!-- Google Fonts & Fontsource for Nikosh Font -->
+    <style>
+        @import url('https://fonts.cdnfonts.com/css/nikosh');
+        
+        :root {
+            --primary-color: #4a00e0;
+            --secondary-color: #8e2de2;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --correct-color: #2ecc71;
+            --wrong-color: #e74c3c;
+            --main-font: 'Nikosh', 'Segoe UI', Tahoma, sans-serif; 
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--main-font);
+            background: linear-gradient(135deg, var(--bg-color) 0%, #e2e8f0 100%);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Full Screen Loader Styling */
+        #loaderContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
+        }
+
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loader-text {
+            margin-top: 15px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Header Styling */
+        header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            width: 100%;
+            padding: 30px 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        header p {
+            margin: 8px 0 0 0;
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        /* Main Container */
+        .container {
+            width: 100%;
+            max-width: 800px;
+            padding: 0 15px;
+            margin-bottom: 40px;
+        }
+
+        /* Quiz Card Styling */
+        .quiz-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.04);
+            transition: transform 0.2s ease;
+        }
+
+        .question-text {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 18px;
+            color: #1a202c;
+            line-height: 1.4;
+        }
+
+        /* Options Grid */
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        /* Option Label */
+        .option-label {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.15rem;
+            line-height: 1.2;
+            transition: all 0.2s ease;
+            background-color: #fafafa;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .option-label:hover {
+            background-color: #edf2f7;
+            border-color: var(--secondary-color);
+        }
+
+        .option-label input[type="radio"] {
+            margin-right: 12px;
+            transform: scale(1.3);
+            accent-color: var(--primary-color);
+            cursor: pointer;
+        }
+
+        /* Result Colors */
+        .option-label.correct {
+            background-color: rgba(46, 204, 113, 0.12) !important;
+            border-color: var(--correct-color) !important;
+            color: #145a32;
+            font-weight: bold;
+        }
+
+        .option-label.wrong {
+            background-color: rgba(231, 76, 60, 0.12) !important;
+            border-color: var(--wrong-color) !important;
+            color: #78281f;
+        }
+
+        /* Description Styling */
+        .description-box {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #ebf8ff;
+            border-left: 4px solid #3182ce;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            display: none;
+            color: #2b6cb0;
+            line-height: 1.4;
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border: none;
+            padding: 16px 0;
+            width: 100%;
+            max-width: 300px;
+            font-size: 1.25rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto;
+            box-shadow: 0 4px 15px rgba(142, 45, 226, 0.4);
+            transition: all 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .submit-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 20px rgba(142, 45, 226, 0.6);
+        }
+
+        /* Score Section */
+        .score-section {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 25px 15px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .score-text {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 10px 0;
+        }
+        
+        .score-section h2 {
+            margin: 0;
+            font-size: 1.6rem;
+        }
+
+        /* Media Queries for Desktop */
+        @media(min-width: 600px) {
+            header {
+                padding: 40px 20px;
+                margin-bottom: 30px;
+            }
+            header h1 {
+                font-size: 2.5rem;
+            }
+            .quiz-card {
+                padding: 25px;
+                margin-bottom: 25px;
+            }
+            .options-container {
+                grid-template-columns: 1fr 1fr;
+            }
+            .submit-btn {
+                width: auto;
+                padding: 15px 50px;
+            }
+            .score-section {
+                padding: 30px;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+
+    <!-- SweetAlert2 CSS and JS via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+    <!-- Dynamic Loader Screen -->
+    <div id="loaderContainer">
+        <div class="loader"></div>
+        <div class="loader-text">প্রশ্নপত্র লোড হচ্ছে, অপেক্ষা করুন...</div>
+    </div>
+
+    <header>
+        <h1>JCR Exam Flatform</h1>
+        <p>নিচে ৫০ টি MCQ প্রশ্ন রয়েছে, এগুলো চর্চা করুন।</p>
+    </header>
+
+    <div class="container">
+        <!-- Score Display -->
+        <div id="scoreSection" class="score-section">
+            <h2>পরীক্ষার ফলাফল</h2>
+            <div id="scoreText" class="score-text">০ / ০</div>
+            <p>নিচে আপনার সঠিক ও ভুল উত্তরগুলো দেখে নিন।</p>
+        </div>
+
+        <!-- Quiz Form -->
+        <form id="quizForm" novalidate> <!-- HTML5 এর ডিফল্ট পপআপ বন্ধ করার জন্য novalidate -->
+            <div id="quizContainer"></div>
+            <button type="submit" class="submit-btn" id="submitBtn">ফলাফল জমা দিন</button>
+        </form>
+    </div>
+
+    <script>
+        const quizContainer = document.getElementById('quizContainer');
+        const quizForm = document.getElementById('quizForm');
+        const scoreSection = document.getElementById('scoreSection');
+        const scoreText = document.getElementById('scoreText');
+        const loaderContainer = document.getElementById('loaderContainer');
+
+        // আপনার গুগল শীট Web App URL
+        const googleSheetUrl = "https://script.google.com/macros/s/AKfycbwZsharp4bpVY5byfdOZWtSQLYIeZDIyTSdU4ihO3oVgRGvePlr3BEMcuKOdUYPEAwDEA/exec"; 
+
+        // ১. গুগল শীট থেকে ডেটা নিয়ে আসার ফাংশন
+        function fetchQuizData() {
+            fetch(googleSheetUrl)
+                .then(response => response.json())
+                .then(data => {
+                    window.quizQuestions = data; 
+                    loadQuiz(data);
+                    // ডেটা চলে এলে লোডার স্ক্রিন হাইড করে দেওয়া হবে
+                    loaderContainer.style.opacity = '0';
+                    setTimeout(() => loaderContainer.style.display = 'none', 300);
+                })
+                .catch(error => {
+                    console.error("Error fetching data:", error);
+                    // এরর মেসেজটিও SweetAlert দিয়ে সুন্দরভাবে দেখানো হলো
+                    loaderContainer.style.display = 'none';
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'দুঃখিত!',
+                        text: 'গুগল শীট থেকে ডাটা লোড করতে সমস্যা হচ্ছে। পেজটি রিফ্রেশ করুন।',
+                        confirmButtonColor: '#4a00e0'
+                    });
+                });
+        }
+
+        // পেজ ওপেন হলেই ফেচিং শুরু হবে
+        fetchQuizData();
+
+        // ২. প্রশ্নগুলো ডাইনামিকালি লোড করার ফাংশн
+        function loadQuiz(questions) {
+            quizContainer.innerHTML = "";
+            
+            if(!questions || questions.length === 0) {
+                quizContainer.innerHTML = "<p style='text-align:center; font-size:1.2rem;'>কোনো প্রশ্ন খুঁজে পাওয়া যায়নি।</p>";
+                return;
+            }
+
+            questions.forEach((q) => {
+                const card = document.createElement('div');
+                card.className = 'quiz-card';
+                card.setAttribute('data-sl', q.SL);
+
+                // এখানে রেডিও বাটনের required কেটে দেওয়া হয়েছে কারণ আমরা ম্যানুয়ালি SweetAlert দিয়ে চেক করব
+                card.innerHTML = `
+                    <div class="question-text">${q.SL}. ${q.Questions}</div>
+                    <div class="options-container">
+                        <label class="option-label" id="label-${q.SL}-Option_A">
+                            <input type="radio" name="question-${q.SL}" value="Option_A"> ${q.Option_A}
+                        </label>
+                        <label class="option-label" id="label-${q.SL}-Option_B">
+                            <input type="radio" name="question-${q.SL}" value="Option_B"> ${q.Option_B}
+                        </label>
+                        <label class="option-label" id="label-${q.SL}-Option_C">
+                            <input type="radio" name="question-${q.SL}" value="Option_C"> ${q.Option_C}
+                        </label>
+                        <label class="option-label" id="label-${q.SL}-Option_D">
+                            <input type="radio" name="question-${q.SL}" value="Option_D"> ${q.Option_D}
+                        </label>
+                    </div>
+                    <div class="description-box" id="desc-${q.SL}">
+                        <strong>ব্যাখ্যা:</strong> ${q.Description}
+                    </div>
+                `;
+                quizContainer.appendChild(card);
+            });
+        }
+
+        // ৩. সাবমিট করার সময় SweetAlert ভ্যালিডেশন এবং স্কোর ক্যালকুলেশন
+        quizForm.addEventListener('submit', function(e) {
+            e.preventDefault(); 
+            
+            if (!window.quizQuestions) return;
+
+            let unansweredCount = 0;
+
+            // প্রথমে চেক করা হচ্ছে কোনো প্রশ্ন ফাঁকা আছে কিনা
+            window.quizQuestions.forEach(q => {
+                const checkedOption = quizForm.querySelector(`input[name="question-${q.SL}"]:checked`);
+                if (!checkedOption) {
+                    unansweredCount++;
+                }
+            });
+
+            // যদি কোনো প্রশ্নের উত্তর না দেওয়া থাকে, তবে SweetAlert ওয়ার্নিং দেখাবে
+            if (unansweredCount > 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'উত্তর বাকি আছে!',
+                    text: `আপনি এখনো ${unansweredCount}টি প্রশ্নের উত্তর দেননি। দয়া করে সবগুলো প্রশ্নের উত্তর দিন।`,
+                    confirmButtonColor: '#e74c3c',
+                    confirmButtonText: 'ঠিক আছে'
+                });
+                return; // সাবমিট প্রসেস এখানেই থামিয়ে দেওয়া হলো
+            }
+
+            // সবগুলো উত্তর দেওয়া থাকলে নিচের কোড রান করবে (ফলাফল দেখাবে)
+            let score = 0;
+            const totalQuestions = window.quizQuestions.length;
+
+            window.quizQuestions.forEach(q => {
+                const selectedOption = quizForm.querySelector(`input[name="question-${q.SL}"]:checked`);
+                const correctAnswer = q.Answer ? q.Answer.trim() : ""; 
+
+                ['Option_A', 'Option_B', 'Option_C', 'Option_D'].forEach(opt => {
+                    const labelEl = document.getElementById(`label-${q.SL}-${opt}`);
+                    if(labelEl) labelEl.classList.remove('correct', 'wrong');
+                });
+
+                const correctLabel = document.getElementById(`label-${q.SL}-${correctAnswer}`);
+                if(correctLabel) correctLabel.classList.add('correct');
+
+                if (selectedOption) {
+                    const userAnswer = selectedOption.value;
+                    if (userAnswer === correctAnswer) {
+                        score++; 
+                    } else {
+                        const wrongLabel = document.getElementById(`label-${q.SL}-${userAnswer}`);
+                        if(wrongLabel) wrongLabel.classList.add('wrong');
+                    }
+                }
+
+                const descBox = document.getElementById(`desc-${q.SL}`);
+                if(descBox) descBox.style.display = 'block';
+            });
+
+            // পরীক্ষা শেষ হওয়ার পর একটি Success SweetAlert পপআপ
+            Swal.fire({
+                icon: 'success',
+                title: 'অভিনন্দন!',
+                text: `আপনার পরীক্ষা সফলভাবে সম্পন্ন হয়েছে। আপনার স্কোর: ${score}/${totalQuestions}`,
+                confirmButtonColor: '#4a00e0',
+                confirmButtonText: 'স্কোরবোর্ড দেখুন'
+            }).then(() => {
+                // পপআপের ওকে বাটনে ক্লিক করলে স্মুথ স্ক্রল করে উপরে চলে যাবে
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            // ফলাফল বোর্ড লাইভ করা
+            scoreText.innerHTML = `${score} / ${totalQuestions}`;
+            scoreSection.style.display = 'block';
+            
+            // সব রেডিও বাটন লক ও সাবমিট হাইড
+            quizForm.querySelectorAll('input[type="radio"]').forEach(input => input.disabled = true);
+            document.getElementById('submitBtn').style.display = 'none';
+        });
+    </script>
+</body>
+</html>
