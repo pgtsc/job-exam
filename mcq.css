@@ -1,7 +1,21 @@
-@import url('https://fonts.cdnfonts.com/css/nikosh');
+@font-face {
+    font-family: 'Nikosh';
+    src: url('Nikosh.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap; /* ফন্ট লোড হওয়ার আগ পর্যন্ত যেন টেক্সট অদৃশ্য না থাকে */
+}
 
-/* CSS Reset & Variables */
 * {box-sizing: border-box; margin: 0; padding: 0;}
+@font-face {
+    font-family: 'Nikosh';
+    src: url('Nikosh.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap; /* ফন্ট লোড হওয়ার আগ পর্যন্ত যেন টেক্সট অদৃশ্য না থাকে */
+}
+
+
 
 :root {
     --primary-gradient: linear-gradient(135deg, #4a00e0 0%, #8e2de2 100%);
