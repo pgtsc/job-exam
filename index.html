@@ -83,32 +83,58 @@
 
         // ১. গুগল শীট থেকে ডেটা নিয়ে আসার ফাংশন
         function fetchQuizData() {
-            fetch(googleSheetUrl)
-                .then(response => response.json())
-                .then(data => {
-                    window.quizQuestions = data; 
-                    loadQuiz(data);
-                    
-                    if(data && data.length > 0) {
-                        infoTotalQuestions.innerText = data.length;
-                        infoTotalMarks.innerText = data.length; 
-                    }
+            // প্রথমে চেক করছি sessionStorage-এ আগের কোনো ডেটা সেভ করা আছে কিনা
+            const cachedData = sessionStorage.getItem('quizDataCache');
 
-                    loaderContainer.style.opacity = '0';
-                    setTimeout(() => loaderContainer.classList.add('d-none'), 300);
-                })
-                .catch(error => {
-                    console.error("Error fetching data:", error);
-                    loaderContainer.classList.add('d-none');
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'দুঃখিত!',
-                        text: 'Server থেকে ডাটা লোড করতে সমস্যা হচ্ছে। পেজটি রিফ্রেশ করুন।',
-                        confirmButtonColor: '#4a00e0'
+            if (cachedData) {
+                // যদি মেমোরিতে ডেটা থাকে, তবে সার্ভারে রিকোয়েস্ট না পাঠিয়ে সরাসরি সেখান থেকে লোড হবে
+                const data = JSON.parse(cachedData);
+                window.quizQuestions = data; 
+                loadQuiz(data);
+                
+                if(data && data.length > 0) {
+                    infoTotalQuestions.innerText = data.length;
+                    infoTotalMarks.innerText = data.length; 
+                }
+
+                // লোডার স্ক্রিন হাইড করা
+                loaderContainer.style.opacity = '0';
+                setTimeout(() => loaderContainer.classList.add('d-none'), 300);
+                
+                console.log("Data loaded from sessionStorage (No server request made).");
+            } else {
+                // যদি মেমোরিতে ডেটা না থাকে, তবেই কেবল প্রথমবার সার্ভার থেকে ফেস (Fetch) করবে
+                fetch(googleSheetUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        // সার্ভার থেকে পাওয়া ডেটা sessionStorage-এ 'quizDataCache' নামে সেভ করে রাখা হচ্ছে
+                        sessionStorage.setItem('quizDataCache', JSON.stringify(data));
+                        
+                        window.quizQuestions = data; 
+                        loadQuiz(data);
+                        
+                        if(data && data.length > 0) {
+                            infoTotalQuestions.innerText = data.length;
+                            infoTotalMarks.innerText = data.length; 
+                        }
+
+                        loaderContainer.style.opacity = '0';
+                        setTimeout(() => loaderContainer.classList.add('d-none'), 300);
+                        
+                        console.log("Data loaded from Server and saved to sessionStorage.");
+                    })
+                    .catch(error => {
+                        console.error("Error fetching data:", error);
+                        loaderContainer.classList.add('d-none');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'দুঃখিত!',
+                            text: 'Server থেকে ডাটা লোড করতে সমস্যা হচ্ছে। পেজটি রিফ্রেশ করুন।',
+                            confirmButtonColor: '#4a00e0'
+                        });
                     });
-                });
+            }
         }
-
         fetchQuizData();
 
         // ২. প্রশ্নগুলো ডাইনামিকালি লোড করার ফাংশন
